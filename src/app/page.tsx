@@ -3,9 +3,10 @@
 import Image from "next/image";
 import styles from "./page.module.css";
 import { useState } from "react";
-import Modal from "@/components/modal";
-import NewTask from "@/components/newTask";
+import Modal from "@/components/modal/modal";
+import NewTask from "@/components/tasks/newTask";
 import { TaskRecord } from "@/types/commonTypes";
+import TableRow from "@/components/table/tableRow";
 
 
 export default function Home() {
@@ -39,12 +40,7 @@ export default function Home() {
           </thead>
           <tbody>
             {tasks && tasks.map((task) => (
-            <tr key={task.id}>
-              <th scope="row">{task.task}</th>
-              {task.week.map((day,index) => (
-                <td key={index}>{day ? "o" : "x"}</td>
-              ))}
-            </tr>
+            <TableRow key={task.id} task={task} />
             ))}
           </tbody>
         </table>
