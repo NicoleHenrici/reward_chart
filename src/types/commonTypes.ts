@@ -1,11 +1,15 @@
 export type TaskRecord = {
   id: number;
   task: string;
-  monday: string;
-  tuesday: string;
-  wednesday: string;
-  thursday: string;
-  friday: string;
+  accomplishedDays: {
+    monday: boolean;
+    tuesday: boolean;
+    wednesday: boolean;
+    thursday: boolean;
+    friday: boolean;
+    saturday: boolean;
+    sunday: boolean;
+  }
 };
 
 export type ModalProps = {
