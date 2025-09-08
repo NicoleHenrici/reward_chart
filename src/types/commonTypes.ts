@@ -7,3 +7,8 @@ export type TaskRecord = {
   thursday: string;
   friday: string;
 };
+
+export type ModalProps = {
+  children: React.ReactNode;
+  customFn?: () => void;
+};
