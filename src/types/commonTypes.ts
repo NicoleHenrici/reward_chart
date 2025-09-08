@@ -1,16 +1,13 @@
 export type TaskRecord = {
   id: number;
   task: string;
-  accomplishedDays: {
-    monday: boolean;
-    tuesday: boolean;
-    wednesday: boolean;
-    thursday: boolean;
-    friday: boolean;
-    saturday: boolean;
-    sunday: boolean;
-  }
+  week: Week[];
 };
+
+export type Week = {
+  day: string;
+  accomplished: boolean;
+}
 
 export type ModalProps = {
   children: React.ReactNode;
