@@ -8,14 +8,12 @@ import NewTask from "@/components/newTask";
 
 
 export default function Home() {
-  const [click, setClick] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
 
   function handleNewRow() {
-    // Logic to add a new row to the table
-    console.log("New row button clicked");
-
-    setClick((prevClick) => !prevClick);
+    setIsVisible((prevVisible) => !prevVisible);
   }
+
   return (
     <div className={styles.page}>
       <main className={styles.main}>
@@ -39,9 +37,10 @@ export default function Home() {
             </tr>
           </tbody>
         </table>
-        <button type="button" className="btn btn-outline-primary" onClick={handleNewRow}>Neue Zeile</button>
-        {click && <Modal> 
-          <NewTask /> 
+        <button type="button" className="btn btn-outline-primary"
+          onClick={handleNewRow}>Neue Zeile</button>
+        {isVisible && <Modal customFn={handleNewRow}>
+          <NewTask />
         </Modal>}
       </main>
       <footer className={styles.footer}>
