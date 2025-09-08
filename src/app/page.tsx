@@ -5,13 +5,20 @@ import styles from "./page.module.css";
 import { useState } from "react";
 import Modal from "@/components/modal";
 import NewTask from "@/components/newTask";
+import { TaskRecord } from "@/types/commonTypes";
 
 
 export default function Home() {
   const [isVisible, setIsVisible] = useState(false);
+  const [tasks, setTasks] = useState<TaskRecord[]>([]);
 
-  function handleNewRow() {
+  function showModalHandler() {
     setIsVisible((prevVisible) => !prevVisible);
+  }
+
+  function addTaskHandler(task: TaskRecord) {
+    setTasks((prevTasks) => [...prevTasks, task]);
+    showModalHandler();
   }
 
   return (
@@ -26,21 +33,25 @@ export default function Home() {
               <th scope="col">MITTWOCH</th>
               <th scope="col">DONNERSTAG</th>
               <th scope="col">FREITAG</th>
+              <th scope="col">SASMSTAG</th>
+              <th scope="col">SONNTAG</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <th scope="row">1</th>
-              <td>Mark</td>
-              <td>Otto</td>
-              <td>@mdo</td>
+            {tasks && tasks.map((task) => (
+            <tr key={task.id}>
+              <th scope="row">{task.task}</th>
+              {task.week.map((day,index) => (
+                <td key={index}>{day ? "o" : "x"}</td>
+              ))}
             </tr>
+            ))}
           </tbody>
         </table>
         <button type="button" className="btn btn-outline-primary"
-          onClick={handleNewRow}>Neue Zeile</button>
-        {isVisible && <Modal customFn={handleNewRow}>
-          <NewTask />
+          onClick={showModalHandler}>Neue Zeile</button>
+        {isVisible && <Modal customFn={showModalHandler}>
+          <NewTask newTaskHandler={addTaskHandler} />
         </Modal>}
       </main>
       <footer className={styles.footer}>
