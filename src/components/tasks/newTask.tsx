@@ -19,13 +19,13 @@ export default function NewTask({ newTaskHandler }: NewTaskProps) {
             id: Math.random(),
             task: newTask || "",
             week: [
-                {day: 'monday', accomplished: false},
-                {day: 'tuesday', accomplished: false},
-                {day: 'wednesday', accomplished: false},
-                {day: 'thursday', accomplished: false},
-                {day: 'friday', accomplished: false},
-                {day: 'saturday', accomplished: false},
-                {day: 'sunday', accomplished: false},
+                {id: 1, day: 'monday', accomplished: false},
+                {id: 2, day: 'tuesday', accomplished: false},
+                {id: 3, day: 'wednesday', accomplished: false},
+                {id: 4, day: 'thursday', accomplished: false},
+                {id: 5, day: 'friday', accomplished: false},
+                {id: 6, day: 'saturday', accomplished: false},
+                {id: 7, day: 'sunday', accomplished: false},
             ]
         }
 
