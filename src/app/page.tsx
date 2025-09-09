@@ -26,6 +26,23 @@ export default function Home() {
     setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
   }
 
+  function toggleCheckedTaskHandler(id: number, dayId: number) {
+    setTasks((prevTasks) => prevTasks.map((task) => {
+      if (task.id === id) {
+        const updatedWeek = task.week.map((day) => {
+          if (day.id === dayId) {
+            return { ...day, accomplished: !day.accomplished };
+          }
+          return day;
+        });
+        return { ...task, week: updatedWeek };
+      }
+      return task;
+    }));
+
+    console.log(tasks);
+  }
+
   return (
     <div className={styles.page}>
       <main className={styles.main}>
@@ -44,7 +61,7 @@ export default function Home() {
           </thead>
           <tbody>
             {tasks && tasks.map((task) => (
-            <TableRow key={task.id} task={task} removeTask={deleteTaskHandler} />
+            <TableRow key={task.id} task={task} removeTask={deleteTaskHandler} toggleAccomplished={toggleCheckedTaskHandler} />
             ))}
           </tbody>
         </table>
