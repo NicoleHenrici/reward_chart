@@ -5,6 +5,7 @@ export type TaskRecord = {
 };
 
 export type Week = {
+  id: number;
   day: string;
   accomplished: boolean;
 }
