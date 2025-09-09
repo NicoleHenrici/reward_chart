@@ -6,8 +6,7 @@ import { useState } from "react";
 import Modal from "@/components/modal/modal";
 import NewTask from "@/components/tasks/newTask";
 import { TaskRecord } from "@/types/commonTypes";
-import TableRow from "@/components/table/tableRow";
-import TableHead from "@/components/table/tableHead";
+import TableStructure from "@/components/table/tableStructure";
 
 
 export default function Home() {
@@ -45,14 +44,15 @@ export default function Home() {
   return (
     <div className={styles.page}>
       <main className={styles.main}>
-        <table className={`table ${styles.table}`}>
+        {/* <table className={`table ${styles.table}`}>
           <TableHead />
           <tbody>
             {tasks && tasks.map((task) => (
             <TableRow key={task.id} task={task} removeTask={deleteTaskHandler} toggleAccomplished={toggleCheckedTaskHandler} />
             ))}
           </tbody>
-        </table>
+        </table> */}
+        <TableStructure tasks={tasks} deleteTaskHandler={deleteTaskHandler} toggleCheckedTaskHandler={toggleCheckedTaskHandler} />
         <button type="button" className="btn btn-outline-primary"
           onClick={showModalHandler}>Neue Zeile</button>
         {isVisible && <Modal customFn={showModalHandler}>

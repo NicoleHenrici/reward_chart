@@ -35,11 +35,6 @@
   grid-row-start: 2;
 }
 
-
-.table {
-    --bs-table-bg: transparent;
-}
-
 .main ol {
   font-family: var(--font-geist-mono);
   padding-left: 0;
