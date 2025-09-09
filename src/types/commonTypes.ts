@@ -1,10 +1,10 @@
 export type TaskRecord = {
   id: number;
   task: string;
-  week: Week[];
+  week: WeekDay[];
 };
 
-export type Week = {
+export type WeekDay = {
   id: number;
   day: string;
   accomplished: boolean;
