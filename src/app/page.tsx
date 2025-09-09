@@ -7,6 +7,7 @@ import Modal from "@/components/modal/modal";
 import NewTask from "@/components/tasks/newTask";
 import { TaskRecord } from "@/types/commonTypes";
 import TableRow from "@/components/table/tableRow";
+import TableHead from "@/components/table/tableHead";
 
 
 export default function Home() {
@@ -39,26 +40,13 @@ export default function Home() {
       }
       return task;
     }));
-
-    console.log(tasks);
   }
 
   return (
     <div className={styles.page}>
       <main className={styles.main}>
         <table className={`table ${styles.table}`}>
-          <thead>
-            <tr>
-              <th scope="col">AUFGABE</th>
-              <th scope="col">MONTAG</th>
-              <th scope="col">DIENSTAG</th>
-              <th scope="col">MITTWOCH</th>
-              <th scope="col">DONNERSTAG</th>
-              <th scope="col">FREITAG</th>
-              <th scope="col">SASMSTAG</th>
-              <th scope="col">SONNTAG</th>
-            </tr>
-          </thead>
+          <TableHead />
           <tbody>
             {tasks && tasks.map((task) => (
             <TableRow key={task.id} task={task} removeTask={deleteTaskHandler} toggleAccomplished={toggleCheckedTaskHandler} />
