@@ -22,6 +22,10 @@ export default function Home() {
     showModalHandler();
   }
 
+  function deleteTaskHandler(id: number) {
+    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
+  }
+
   return (
     <div className={styles.page}>
       <main className={styles.main}>
@@ -40,7 +44,7 @@ export default function Home() {
           </thead>
           <tbody>
             {tasks && tasks.map((task) => (
-            <TableRow key={task.id} task={task} />
+            <TableRow key={task.id} task={task} removeTask={deleteTaskHandler} />
             ))}
           </tbody>
         </table>
