@@ -12,6 +12,7 @@ import TableStructure from "@/components/table/tableStructure";
 export default function Home() {
   const [isVisible, setIsVisible] = useState(false);
   const [tasks, setTasks] = useState<TaskRecord[]>([]);
+  const [score, setScore] = useState(0);
 
   function showModalHandler() {
     setIsVisible((prevVisible) => !prevVisible);
@@ -35,26 +36,41 @@ export default function Home() {
           }
           return day;
         });
-        return { ...task, week: updatedWeek };
+        const updatedSumAccomplished = updatedWeek.filter(day => day.accomplished).length;
+        return { ...task, week: updatedWeek, sumAccomplished: updatedSumAccomplished };
       }
+
       return task;
     }));
+
+    setScore((prevScore) => {
+      const task = tasks.find((task) => task.id === id);
+      if (task) {
+        const day = task.week.find((day) => day.id === dayId);
+        if (day) {
+          return day.accomplished ? prevScore - 1 : prevScore + 1;
+        }
+      }
+      return prevScore;
+    });
   }
 
   return (
     <div className={styles.page}>
       <main className={styles.main}>
-        {/* <table className={`table ${styles.table}`}>
-          <TableHead />
-          <tbody>
-            {tasks && tasks.map((task) => (
-            <TableRow key={task.id} task={task} removeTask={deleteTaskHandler} toggleAccomplished={toggleCheckedTaskHandler} />
-            ))}
-          </tbody>
-        </table> */}
-        <TableStructure tasks={tasks} deleteTaskHandler={deleteTaskHandler} toggleCheckedTaskHandler={toggleCheckedTaskHandler} />
-        <button type="button" className="btn btn-outline-primary"
-          onClick={showModalHandler}>Neue Zeile</button>
+        <div className="container text-center">
+          <div className="row">
+            <div className="col">
+              <TableStructure tasks={tasks} deleteTaskHandler={deleteTaskHandler} toggleCheckedTaskHandler={toggleCheckedTaskHandler} />
+              <button type="button" className="btn btn-outline-primary"
+                onClick={showModalHandler}>Neue Zeile</button>
+            </div>
+            <div className="col-2">
+              Score: {score}
+            </div>
+          </div>
+        </div>
+
         {isVisible && <Modal customFn={showModalHandler}>
           <NewTask newTaskHandler={addTaskHandler} />
         </Modal>}
