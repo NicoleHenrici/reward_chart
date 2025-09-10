@@ -10,7 +10,3 @@ export type WeekDay = {
   accomplished: boolean;
 }
 
-export type ModalProps = {
-  children: React.ReactNode;
-  customFn?: () => void;
-};
