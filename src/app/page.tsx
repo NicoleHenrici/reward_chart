@@ -7,14 +7,13 @@ import Modal from "@/components/modal/modal";
 import NewTask from "@/components/tasks/newTask";
 import { TaskRecord } from "@/types/commonTypes";
 import TableStructure from "@/components/table/tableStructure";
+import CardStructure from "@/components/card/cardStructure";
 
 
 export default function Home() {
   const [isVisible, setIsVisible] = useState(false);
   const [tasks, setTasks] = useState<TaskRecord[]>([]);
   const [score, setScore] = useState(0);
-
-  const scoreInPercent = Math.floor(tasks.length > 0 ? (score / (tasks.length * 7)) * 100 : 0);
 
   function showModalHandler() {
     setIsVisible((prevVisible) => !prevVisible);
@@ -68,20 +67,7 @@ export default function Home() {
                 onClick={showModalHandler}>Neue Zeile</button>
             </div>
             <div className="col-2">
-              <div className="card">
-                <div className="card-header">
-                  Übersicht
-                </div>
-                <div className="card-body">
-                  <p className="card-text"><span className="fw-bold">Wochen&shy;punkte:</span> {score}</p>
-                  <p className="card-text fw-bold"> Aktueller Fortschritt:</p>
-                  <div className="progress" role="progressbar" aria-label="Success example" aria-valuenow={score} aria-valuemin={0} aria-valuemax={tasks.length * 7} >
-                    <div className="progress-bar text-bg-success" style={{ width: `${scoreInPercent}%` }}>{scoreInPercent}%</div>
-                  </div>
-                </div>
-                {/* todo: sum up all overall points */}
-                <p className="card-text"><span className="fw-bold">Gesamt:</span> *overall points*</p>
-              </div>
+              <CardStructure score={score} tasksLength={tasks.length} title="Übersicht"/>
             </div>
           </div>
         </div>

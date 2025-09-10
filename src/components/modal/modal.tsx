@@ -1,7 +1,7 @@
 import styles from "./modal.module.css";
 
 
-export type ModalProps = {
+type ModalProps = {
   children: React.ReactNode;
   customFn?: () => void;
 };
