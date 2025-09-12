@@ -6,12 +6,14 @@ function initDb() {
   db.exec(`
         CREATE TABLE IF NOT EXISTS tasks (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            task_description TEXT NOT NULL
+            task_description TEXT NOT NULL,
+            active BOOLEAN NOT NULL DEFAULT 1
     )`);
   db.exec(`
         CREATE TABLE IF NOT EXISTS week (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            week_start_date REAL NOT NULL
+            week_start_date REAL NOT NULL,
+            week_end_date REAL NOT NULL
     )`);
   db.exec(`
         CREATE TABLE IF NOT EXISTS task_completion (
@@ -41,7 +43,11 @@ export function getTaskById(taskId: number) {
         WHERE id = ?
     `);
 
-  return stmt.get(taskId);
+  const result = stmt.run(taskId);
+
+  itemNotFound(result, taskId);
+
+  return result;
 }
 
 export function getAllTasks() {
@@ -51,4 +57,61 @@ export function getAllTasks() {
     `);
 
   return stmt.all();
+}
+
+export function updateTask(taskId: number, updatetTaskDescription: string) {
+  const stmt = db.prepare(`
+        UPDATE tasks
+        SET task_description = ?
+        WHERE id = ?;
+    `);
+  const result = stmt.run(updatetTaskDescription, taskId);
+
+  itemNotFound(result, taskId);
+}
+
+/**
+ * Soft delete a task to keep historical data intact.
+ * @param taskId
+ */
+export function deactivateTask(taskId: number) {
+  const stmt = db.prepare(`
+      UPDATE tasks
+      SET active = 0
+      WHERE id = ?;
+    `);
+
+  const result = stmt.run(taskId);
+
+  itemNotFound(result, taskId);
+}
+
+export function createWeek() {
+  const stmt = db.prepare(`
+      INSERT INTO week (week_start_date, week_end_date)
+      VALUES(julianday('now', 'weekday 1', '-7 days'), julianday('now', 'weekday 0'));
+    `);
+
+  stmt.run();
+}
+
+export function createTaskCompletionItem(
+  taskId: number,
+  weekId: number,
+  completed: boolean
+) {
+  const stmt = db.prepare(
+    `
+      INSERT INTO task_completion (task_id, week_id, completed)
+      VALUES (?, ?, ?);
+    `
+  );
+
+  stmt.run(taskId, weekId, completed);
+}
+
+function itemNotFound(result: Database.RunResult, id: number) {
+  if (result.changes === 0) {
+    console.warn(`Item mit ID ${id} nicht gefunden.`);
+  }
 }
