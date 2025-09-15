@@ -7,7 +7,7 @@ function initDb() {
         CREATE TABLE IF NOT EXISTS tasks (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             task_description TEXT NOT NULL,
-            active BOOLEAN NOT NULL DEFAULT 1
+            active INTEGER NOT NULL DEFAULT 1
     )`);
   db.exec(`
         CREATE TABLE IF NOT EXISTS week (
@@ -21,7 +21,7 @@ function initDb() {
             task_id INTEGER NOT NULL,
             week_id INTEGER NOT NULL,
             day_of_week INTEGER NOT NULL DEFAULT 0,
-            completed BOOLEAN NOT NULL,
+            completed INTEGER NOT NULL,
             FOREIGN KEY (task_id) REFERENCES tasks(id),
             FOREIGN KEY (week_id) REFERENCES week(id)
     )`);
@@ -34,7 +34,7 @@ export function addTask(taskDescription: string) {
         INSERT INTO tasks (task_description)
         VALUES (?);
     `);
-  stmt.run(taskDescription);
+  return stmt.run(taskDescription).lastInsertRowid;
 }
 
 export function getTaskById(taskId: number) {
@@ -93,7 +93,7 @@ export function createWeek() {
       VALUES(julianday('now', 'weekday 1', '-7 days'), julianday('now', 'weekday 0'));
     `);
 
-  stmt.run();
+  return stmt.run().lastInsertRowid;
 }
 
 export function getCurrentWeek() {
@@ -119,7 +119,7 @@ export function createTaskCompletionItem(
   taskId: number,
   weekId: number,
   dayOfWeek: number,
-  completed: boolean
+  completed: number
 ) {
   const stmt = db.prepare(
     `
@@ -133,7 +133,7 @@ export function createTaskCompletionItem(
 
 export function updateTaskCompletionItem(
   taskCompletionId: number,
-  completed: boolean
+  completed: number
 ) {
   const stmt = db.prepare(`
     UPDATE task_completion

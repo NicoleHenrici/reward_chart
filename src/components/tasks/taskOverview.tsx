@@ -7,7 +7,11 @@ import { TaskRecord } from "@/types/commonTypes";
 import Modal from "../modal/modal";
 import NewTask from "./newTask";
 
-export default function TaskOverview() {
+type TaskOverviewProps = {
+    createNewTask: (task: TaskRecord) => void;
+};
+
+export default function TaskOverview({ createNewTask }: TaskOverviewProps) {
 
     const [isVisible, setIsVisible] = useState(false);
     const [tasks, setTasks] = useState<TaskRecord[]>([]);
@@ -17,12 +21,6 @@ export default function TaskOverview() {
         setIsVisible((prevVisible) => !prevVisible);
     }
 
-    function addTaskHandler(task: TaskRecord) {
-        setTasks((prevTasks) => [...prevTasks, task]);
-        showModalHandler();
-    }
-
-    
     return (
         <>
             <div className="container text-center">
@@ -39,7 +37,7 @@ export default function TaskOverview() {
             </div>
 
             {isVisible && <Modal customFn={showModalHandler}>
-                <NewTask newTaskHandler={addTaskHandler} />
+                <NewTask createNewTask={createNewTask} showModalHandler={showModalHandler} />
             </Modal>}
         </>
     );

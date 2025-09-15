@@ -1,6 +1,6 @@
 export type TaskRecord = {
   id: number;
-  task: string;
+  taskTitle: string;
   week: WeekDay[];
 };
 

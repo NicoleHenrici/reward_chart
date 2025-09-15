@@ -12,13 +12,13 @@ export default function TableRow({ task, setTasks, setScore }: TableRowProps) {
 
     function deleteTaskHandler(id: number) {
         setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
-        // ToDo: Update score when task is deleted
+        
         setScore((prevScore) => prevScore - task.week.filter(day => day.accomplished).length);
     }
 
     return (
         <tr key={task.id}>
-            <th scope="row">{task.task}</th>
+            <th scope="row">{task.taskTitle}</th>
             {task.week.map((day) => (
                 <TableCell key={day.id} day={day} taskId={task.id} setTasks={setTasks} setScore={setScore} />
             ))}

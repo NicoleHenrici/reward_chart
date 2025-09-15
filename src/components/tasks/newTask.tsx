@@ -2,11 +2,12 @@ import { TaskRecord } from "@/types/commonTypes";
 import { useRef } from "react";
 
 type NewTaskProps = {
-    newTaskHandler: (task: TaskRecord) => void;
+    createNewTask: (task: TaskRecord) => void;
+    showModalHandler: () => void;
 };
 
 
-export default function NewTask({ newTaskHandler }: NewTaskProps) {
+export default function NewTask({ createNewTask, showModalHandler }: NewTaskProps) {
 
     const inputTextRef = useRef<HTMLTextAreaElement>(null);
 
@@ -17,19 +18,21 @@ export default function NewTask({ newTaskHandler }: NewTaskProps) {
 
         const task = {
             id: Math.random(),
-            task: newTask || "",
+            taskTitle: newTask || "",
             week: [
-                {id: 1, day: 'monday', accomplished: false},
-                {id: 2, day: 'tuesday', accomplished: false},
-                {id: 3, day: 'wednesday', accomplished: false},
-                {id: 4, day: 'thursday', accomplished: false},
-                {id: 5, day: 'friday', accomplished: false},
-                {id: 6, day: 'saturday', accomplished: false},
-                {id: 7, day: 'sunday', accomplished: false},
+                { id: 0, day: 'monday', accomplished: false },
+                { id: 1, day: 'tuesday', accomplished: false },
+                { id: 2, day: 'wednesday', accomplished: false },
+                { id: 3, day: 'thursday', accomplished: false },
+                { id: 4, day: 'friday', accomplished: false },
+                { id: 5, day: 'saturday', accomplished: false },
+                { id: 6, day: 'sunday', accomplished: false },
             ]
         }
 
-        newTaskHandler(task);
+        createNewTask(task);
+
+        showModalHandler();
     }
 
     return (
