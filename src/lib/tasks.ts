@@ -20,6 +20,7 @@ function initDb() {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             task_id INTEGER NOT NULL,
             week_id INTEGER NOT NULL,
+            day_of_week INTEGER NOT NULL DEFAULT 0,
             completed BOOLEAN NOT NULL,
             FOREIGN KEY (task_id) REFERENCES tasks(id),
             FOREIGN KEY (week_id) REFERENCES week(id)
