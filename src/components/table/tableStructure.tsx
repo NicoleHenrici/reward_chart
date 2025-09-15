@@ -1,22 +1,21 @@
-import { TaskRecord } from "@/types/commonTypes";
+import { TaskRecord, WeekDay } from "@/types/commonTypes";
 import TableHead from "./tableHead";
 import TableRow from "./tableRow";
 import styles from "@/components/table/tableStructure.module.css";
 
 type TableStructureProps = {
     tasks: TaskRecord[];
-    setTasks: React.Dispatch<React.SetStateAction<TaskRecord[]>>;
-    setScore: React.Dispatch<React.SetStateAction<number>>;
+    updateTask: (task: TaskRecord, toDelete: boolean, day?: WeekDay) => void;
 };
 
-export default function TableStructure({ tasks, setTasks, setScore }: TableStructureProps) {
+export default function TableStructure({ tasks, updateTask }: TableStructureProps) {
 
     return (
         <table className={`table ${styles.table}`}>
             <TableHead />
             <tbody>
                 {tasks && tasks.map((task) => (
-                    <TableRow key={task.id} task={task} setTasks={setTasks} setScore={setScore} />
+                    <TableRow key={task.id} task={task} updateTask={updateTask} />
                 ))}
             </tbody>
         </table>

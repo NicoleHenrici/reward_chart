@@ -1,28 +1,21 @@
-import { TaskRecord } from "@/types/commonTypes";
+import { TaskRecord, WeekDay } from "@/types/commonTypes";
 import { MdDelete } from "react-icons/md";
 import TableCell from "./tableCell";
 
 type TableRowProps = {
     task: TaskRecord;
-    setTasks: React.Dispatch<React.SetStateAction<TaskRecord[]>>;
-    setScore: React.Dispatch<React.SetStateAction<number>>;
+    updateTask: (task: TaskRecord, toDelete: boolean, day?: WeekDay) => void;
 };
 
-export default function TableRow({ task, setTasks, setScore }: TableRowProps) {
-
-    function deleteTaskHandler(id: number) {
-        setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
-        
-        setScore((prevScore) => prevScore - task.week.filter(day => day.accomplished).length);
-    }
+export default function TableRow({ task, updateTask }: TableRowProps) {
 
     return (
         <tr key={task.id}>
             <th scope="row">{task.taskTitle}</th>
             {task.week.map((day) => (
-                <TableCell key={day.id} day={day} taskId={task.id} setTasks={setTasks} setScore={setScore} />
+                <TableCell key={day.id} day={day} task={task} updateTask={updateTask} />
             ))}
-            <td><button type="button" className="btn btn-link" onClick={() => deleteTaskHandler(task.id)}><MdDelete /></button></td>
+            <td><button type="button" className="btn btn-link" onClick={() => updateTask(task, true)}><MdDelete /></button></td>
         </tr>
     );
 }
