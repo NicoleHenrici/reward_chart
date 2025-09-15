@@ -95,19 +95,91 @@ export function createWeek() {
   stmt.run();
 }
 
+export function getCurrentWeek() {
+  const stmt = db.prepare(`
+    SELECT *
+    FROM week
+    WHERE week_start_date <= julianday('now') AND week_end_date >= julianday('now')
+  `);
+
+  return stmt.get();
+}
+
+export function getAllWeeks() {
+  const stmt = db.prepare(`
+    SELECT *
+    FROM week
+    `);
+
+  return stmt.all();
+}
+
 export function createTaskCompletionItem(
   taskId: number,
   weekId: number,
+  dayOfWeek: number,
   completed: boolean
 ) {
   const stmt = db.prepare(
     `
-      INSERT INTO task_completion (task_id, week_id, completed)
-      VALUES (?, ?, ?);
+      INSERT INTO task_completion (task_id, week_id, day_of_week, completed)
+      VALUES (?, ?, ?, ?);
     `
   );
 
-  stmt.run(taskId, weekId, completed);
+  stmt.run(taskId, weekId, dayOfWeek, completed);
+}
+
+export function updateTaskCompletionItem(
+  taskCompletionId: number,
+  completed: boolean
+) {
+  const stmt = db.prepare(`
+    UPDATE task_completion
+    SET completet = ?
+    WHERE id = ?
+    `);
+
+  const result = stmt.run(completed, taskCompletionId);
+
+  itemNotFound(result, taskCompletionId);
+}
+
+export function getTaskCompletionItemsByTaskId(taskId: number) {
+  const stmt = db.prepare(`
+    SELECT *
+    FROM task_completion
+    WHERE task_id = ?
+    `);
+
+  const result = stmt.run(taskId);
+
+  itemNotFound(result, taskId);
+
+  return result;
+}
+
+export function getTaskCompletionItemsByWeekId(weekId: number) {
+  const stmt = db.prepare(`
+    SELECT *
+    FROM task_completion
+    WHERE week_id = ?
+    `);
+
+  const result = stmt.run(weekId);
+
+  itemNotFound(result, weekId);
+
+  return result;
+}
+
+export function getAllTaskCompletionItems() {
+  const stmt = db.prepare(`
+    SELECT *
+    FROM task_completion
+    `);
+
+  return stmt.all();
 }
 
 function itemNotFound(result: Database.RunResult, id: number) {
