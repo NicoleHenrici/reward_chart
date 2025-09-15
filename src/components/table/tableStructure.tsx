@@ -5,18 +5,18 @@ import styles from "@/components/table/tableStructure.module.css";
 
 type TableStructureProps = {
     tasks: TaskRecord[];
-    deleteTaskHandler: (id: number) => void;
-    toggleCheckedTaskHandler: (id: number, dayId: number) => void;
+    setTasks: React.Dispatch<React.SetStateAction<TaskRecord[]>>;
+    setScore: React.Dispatch<React.SetStateAction<number>>;
 };
 
-export default function TableStructure({ tasks, deleteTaskHandler, toggleCheckedTaskHandler }: TableStructureProps) {
+export default function TableStructure({ tasks, setTasks, setScore }: TableStructureProps) {
 
     return (
         <table className={`table ${styles.table}`}>
             <TableHead />
             <tbody>
                 {tasks && tasks.map((task) => (
-                    <TableRow key={task.id} task={task} removeTask={deleteTaskHandler} toggleAccomplished={toggleCheckedTaskHandler} />
+                    <TableRow key={task.id} task={task} setTasks={setTasks} setScore={setScore} />
                 ))}
             </tbody>
         </table>
