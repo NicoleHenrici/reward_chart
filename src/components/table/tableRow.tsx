@@ -13,6 +13,7 @@ export default function TableRow({ task, setTasks, setScore }: TableRowProps) {
     function deleteTaskHandler(id: number) {
         setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
         // ToDo: Update score when task is deleted
+        setScore((prevScore) => prevScore - task.week.filter(day => day.accomplished).length);
     }
 
     return (
