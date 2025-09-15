@@ -45,3 +45,8 @@ next-env.d.ts
 *.sqlite
 *.sqlite3
 *.db-journal
+
+# compiled JavaScript
+*.js
+*.js.map
+/dist
