@@ -133,15 +133,17 @@ export function createTaskCompletionItem(
 
 export function updateTaskCompletionItem(
   taskCompletionId: number,
+  weekId: number,
+  dayOfWeek: number,
   completed: number
 ) {
   const stmt = db.prepare(`
     UPDATE task_completion
-    SET completet = ?
-    WHERE id = ?
+    SET completed = ?
+    WHERE id = ? AND week_id = ? AND day_of_week = ?
     `);
 
-  const result = stmt.run(completed, taskCompletionId);
+  const result = stmt.run(completed, taskCompletionId, weekId, dayOfWeek);
 
   itemNotFound(result, taskCompletionId);
 }
