@@ -36,7 +36,7 @@ async function weekToCache(currentWeekId: number) {
 
 export async function createNewTask(task: TaskRecord) {
   const taskId = addTask(task.taskTitle);
-  const weekId = createWeek();
+  const weekId = await checkCurrentWeek();
 
   for (const day of task.week) {
     const dayCompleted = day.accomplished ? 1 : 0;
@@ -48,4 +48,8 @@ export async function createNewTask(task: TaskRecord) {
       dayCompleted as number
     );
   }
+}
+
+export async function updateTaskCompletionItem(completionId: number, completed: number){
+    updateTaskCompletionItem(completionId, completed);
 }
