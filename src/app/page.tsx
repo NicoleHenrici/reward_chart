@@ -2,23 +2,10 @@
 import Image from "next/image";
 import styles from "./page.module.css";
 import TaskOverview from "@/components/tasks/taskOverview";
-import { addTask, createTaskCompletionItem, createWeek } from "@/lib/tasks";
-import { TaskRecord } from "@/types/commonTypes";
+import { createNewTask } from "@/server/actions";
 
 
 export default function Home() {
-
-  async function createNewTask(task: TaskRecord) {
-    "use server"
-    const taskId = addTask(task.taskTitle)
-    const weekId = createWeek();
-
-    for (const day of task.week) {
-      const dayCompleted = day.accomplished ? 1 : 0;
-
-      createTaskCompletionItem(taskId as number, weekId as number, day.id, dayCompleted as number);
-    }
-  }
 
   return (
     <div className={styles.page}>
