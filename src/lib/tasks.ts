@@ -1,4 +1,5 @@
-import Database from "better-sqlite3";
+import { TaskRecord } from "@/types/commonTypes";
+import Database, { Statement } from "better-sqlite3";
 
 const db = new Database("rewards_chart.db");
 
@@ -183,7 +184,62 @@ export function getAllTaskCompletionItems() {
   return stmt.all();
 }
 
-export function buildTaskRecordEntity() {
+export function buildAllTaskRecordEntities() {
+  const stmt = db.prepare(`
+      SELECT 
+        tc.id as completionId,
+        tc.task_id as taskId,
+        tc.day_of_week as dayOfWeek,
+        tc.completed as completed,
+        t.task_description as taskTitle,
+        w.id as weekId
+      FROM task_completion tc
+      JOIN tasks t ON t.id = tc.task_id
+      JOIN week w ON w.id = tc.week_id
+      ORDER BY tc.task_id, tc.day_of_week
+    `);
+
+  const taskRecordEntities: TaskRecord[] = mapToTsType(stmt.all() as TaskRow[]);
+
+  return taskRecordEntities;
+}
+
+export function buildTaskRecordEntitiesByWeekId(weekId?: number) {
+  let currentWeekId;
+
+  if (weekId) {
+    currentWeekId = weekId;
+  } else {
+    const currentWeek = getCurrentWeek();
+    currentWeekId =
+      currentWeek && currentWeek.lastInsertRowid
+        ? (currentWeek.lastInsertRowid as number)
+        : createWeek();
+  }
+
+  const stmt = db.prepare(`
+      SELECT 
+        tc.id as completionId,
+        tc.task_id as taskId,
+        tc.day_of_week as dayOfWeek,
+        tc.completed as completed,
+        t.task_description as taskTitle,
+        w.id as weekId
+      FROM task_completion tc
+      JOIN tasks t ON t.id = tc.task_id
+      JOIN week w ON w.id = tc.week_id
+      WHERE w.id = ?
+      ORDER BY tc.task_id, tc.day_of_week
+    `);
+
+  const taskRecordEntities: TaskRecord[] = mapToTsType(
+    stmt.all(currentWeekId) as TaskRow[]
+  );
+
+  return taskRecordEntities;
+}
+
+export function buildTaskRecordEntityByTaskId(taskId: number) {
   const currentWeek = getCurrentWeek();
   const currentWeekId =
     currentWeek && currentWeek.lastInsertRowid
@@ -201,15 +257,64 @@ export function buildTaskRecordEntity() {
       FROM task_completion tc
       JOIN tasks t ON t.id = tc.task_id
       JOIN week w ON w.id = tc.week_id
-      WHERE w.id = ?
+      WHERE w.id = ? AND t.id = ?
       ORDER BY tc.task_id, tc.day_of_week
     `);
 
-  return stmt.all(currentWeekId);
+  const taskRecordEntities: TaskRecord[] = mapToTsType(
+    stmt.all(currentWeekId, taskId) as TaskRow[]
+  );
+
+  return taskRecordEntities;
 }
 
 function itemNotFound(result: Database.RunResult, id: number) {
   if (result.changes === 0) {
     console.warn(`Item mit ID ${id} nicht gefunden.`);
   }
+}
+
+type TaskRow = {
+  taskId: number;
+  completionId: number;
+  dayOfWeek: number;
+  completed: number;
+  taskTitle: string;
+  weekId: number;
+};
+
+function mapToTsType(rows: TaskRow[]): TaskRecord[] {
+  const taskMap = new Map<number, TaskRecord>();
+  const dayName = [
+    "Montag",
+    "Dienstag",
+    "Mittwoch",
+    "Donnerstag",
+    "Freitag",
+    "Samstag",
+    "Sonntag",
+  ];
+
+  if (rows.length !== 0) {
+    for (const row of rows) {
+      if (!taskMap.has(row.taskId)) {
+        taskMap.set(row.taskId, {
+          id: row.taskId,
+          taskTitle: row.taskTitle,
+          week: [],
+        });
+      }
+
+      const task = taskMap.get(row.taskId);
+
+      if (task) {
+        task.week.push({
+          id: row.dayOfWeek,
+          day: dayName[row.dayOfWeek],
+          accomplished: row.completed === 1 ? true : false,
+        });
+      }
+    }
+  }
+  return Array.from(taskMap.values());
 }
