@@ -11,11 +11,8 @@ import { TaskRecord } from "@/types/commonTypes";
 
 export async function createTaskEntity(task: TaskRecord) {
   const taskId = addTask(task.taskTitle);
-  let weekId = await getCurrentWeek();
-
-  if (!weekId) {
-    weekId = createWeek();
-  }
+  const week = await getCurrentWeek();
+  const weekId = week ? week.lastInsertRowid : createWeek();
 
   for (const day of task.week) {
     const dayCompleted = day.accomplished ? 1 : 0;

@@ -2,7 +2,7 @@
 import Image from "next/image";
 import styles from "./page.module.css";
 import TaskOverview from "@/components/tasks/taskOverview";
-import { createNewTask } from "@/server/actions";
+import { createTaskEntity } from "@/server/actions";
 
 
 export default function Home() {
@@ -10,7 +10,7 @@ export default function Home() {
   return (
     <div className={styles.page}>
       <main className={styles.main}>
-        <TaskOverview createNewTask={createNewTask} />
+        <TaskOverview createNewTask={createTaskEntity} />
       </main>
       <footer className={styles.footer}>
         <a
