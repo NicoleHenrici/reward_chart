@@ -134,7 +134,7 @@ export function createTaskCompletionItem(
 
 export function updateTaskCompletionItem(
   taskCompletionId: number,
-  completed: number
+  completed: 1 | 0
 ) {
   const stmt = db.prepare(`
     UPDATE task_completion
