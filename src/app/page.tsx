@@ -2,7 +2,7 @@
 import Image from "next/image";
 import styles from "./page.module.css";
 import TaskOverview from "@/components/tasks/taskOverview";
-import { createTaskEntity } from "@/server/actions";
+import { createTaskEntity, fetchTaskRecordsByWeekId, updateTaskCompletionItemById } from "@/server/actions";
 
 
 export default function Home() {
@@ -10,7 +10,7 @@ export default function Home() {
   return (
     <div className={styles.page}>
       <main className={styles.main}>
-        <TaskOverview createNewTask={createTaskEntity} />
+        <TaskOverview createNewTask={createTaskEntity} getTaskRecordsByCurrentWeek={fetchTaskRecordsByWeekId} updateTaskItem={updateTaskCompletionItemById} />
       </main>
       <footer className={styles.footer}>
         <a
