@@ -103,7 +103,7 @@ export function getCurrentWeek() {
     WHERE week_start_date <= julianday('now') AND week_end_date >= julianday('now')
   `);
 
-  return stmt.get();
+  return stmt.run();
 }
 
 export function getAllWeeks() {
@@ -181,6 +181,31 @@ export function getAllTaskCompletionItems() {
     `);
 
   return stmt.all();
+}
+
+export function buildTaskRecordEntity() {
+  const currentWeek = getCurrentWeek();
+  const currentWeekId =
+    currentWeek && currentWeek.lastInsertRowid
+      ? (currentWeek.lastInsertRowid as number)
+      : createWeek();
+
+  const stmt = db.prepare(`
+      SELECT 
+        tc.id as completionId,
+        tc.task_id as taskId,
+        tc.day_of_week as dayOfWeek,
+        tc.completed as completed,
+        t.task_description as taskTitle,
+        w.id as weekId
+      FROM task_completion tc
+      JOIN tasks t ON t.id = tc.task_id
+      JOIN week w ON w.id = tc.week_id
+      WHERE w.id = ?
+      ORDER BY tc.task_id, tc.day_of_week
+    `);
+
+  return stmt.all(currentWeekId);
 }
 
 function itemNotFound(result: Database.RunResult, id: number) {
