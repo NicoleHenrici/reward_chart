@@ -1,5 +1,5 @@
 import { TaskRecord } from "@/types/commonTypes";
-import Database, { Statement } from "better-sqlite3";
+import Database from "better-sqlite3";
 
 const db = new Database("rewards_chart.db");
 
