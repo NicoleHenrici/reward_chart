@@ -4,39 +4,18 @@ import {
   addTask,
   createTaskCompletionItem,
   createWeek,
-  getCurrentWeek,
+  getCurrentWeek
 } from "@/lib/tasks";
+
 import { TaskRecord } from "@/types/commonTypes";
-import { cookies } from "next/headers";
 
-export async function checkCurrentWeek() {
-  const cookieStore = await cookies();
-  let currentWeekId: number | undefined = undefined;
-
-  currentWeekId = cookieStore.get("currentWeekId") as number | undefined;
-
-  if (currentWeekId === undefined) {
-    currentWeekId = getCurrentWeek() as number | undefined;
-
-    if (currentWeekId === undefined) {
-      currentWeekId = createWeek() as number;
-    }
-
-    weekToCache(currentWeekId as number);
-  }
-
-  return currentWeekId;
-}
-
-async function weekToCache(currentWeekId: number) {
-  const cookieStore = await cookies();
-
-  cookieStore.set("currentWeekId", currentWeekId.toString());
-}
-
-export async function createNewTask(task: TaskRecord) {
+export async function createTaskEntity(task: TaskRecord) {
   const taskId = addTask(task.taskTitle);
-  const weekId = await checkCurrentWeek();
+  let weekId = await getCurrentWeek();
+
+  if (!weekId) {
+    weekId = createWeek();
+  }
 
   for (const day of task.week) {
     const dayCompleted = day.accomplished ? 1 : 0;
@@ -48,8 +27,4 @@ export async function createNewTask(task: TaskRecord) {
       dayCompleted as number
     );
   }
-}
-
-export async function updateTaskCompletionItem(completionId: number, completed: number){
-    updateTaskCompletionItem(completionId, completed);
 }
