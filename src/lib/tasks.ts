@@ -21,7 +21,7 @@ function initDb() {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             task_id INTEGER NOT NULL,
             week_id INTEGER NOT NULL,
-            day_of_week INTEGER NOT NULL DEFAULT 0,
+            day_index INTEGER NOT NULL DEFAULT 0,
             completed INTEGER NOT NULL,
             FOREIGN KEY (task_id) REFERENCES tasks(id),
             FOREIGN KEY (week_id) REFERENCES week(id)
@@ -119,32 +119,33 @@ export function getAllWeeks() {
 export function createTaskCompletionItem(
   taskId: number,
   weekId: number,
-  dayOfWeek: number,
+  dayIndex: number,
   completed: number
 ) {
   const stmt = db.prepare(
     `
-      INSERT INTO task_completion (task_id, week_id, day_of_week, completed)
+      INSERT INTO task_completion (task_id, week_id, day_index, completed)
       VALUES (?, ?, ?, ?);
     `
   );
 
-  stmt.run(taskId, weekId, dayOfWeek, completed);
+  stmt.run(taskId, weekId, dayIndex, completed);
 }
 
 export function updateTaskCompletionItem(
-  taskCompletionId: number,
-  completed: 1 | 0
+  taskId: number,
+  completed: 1 | 0,
+  dayIndex: number
 ) {
   const stmt = db.prepare(`
     UPDATE task_completion
     SET completed = ?
-    WHERE id = ?;
+    WHERE task_id = ? AND day_index = ?;
     `);
 
-  const result = stmt.run(completed, taskCompletionId);
+  const result = stmt.run(completed, taskId, dayIndex);
 
-  itemNotFound(result, taskCompletionId);
+  itemNotFound(result, taskId);
 }
 
 export function getTaskCompletionItemsByTaskId(taskId: number) {
@@ -189,14 +190,14 @@ export function buildAllTaskRecordEntities() {
       SELECT 
         tc.id as completionId,
         tc.task_id as taskId,
-        tc.day_of_week as dayOfWeek,
+        tc.day_index as dayIndex,
         tc.completed as completed,
         t.task_description as taskTitle,
         w.id as weekId
       FROM task_completion tc
       JOIN tasks t ON t.id = tc.task_id
       JOIN week w ON w.id = tc.week_id
-      ORDER BY tc.task_id, tc.day_of_week
+      ORDER BY tc.task_id, tc.day_index
     `);
 
   const taskRecordEntities: TaskRecord[] = mapToTsType(stmt.all() as TaskRow[]);
@@ -221,7 +222,7 @@ export function buildTaskRecordEntitiesByWeekId(weekId?: number) {
       SELECT 
         tc.id as completionId,
         tc.task_id as taskId,
-        tc.day_of_week as dayOfWeek,
+        tc.day_index as dayIndex,
         tc.completed as completed,
         t.task_description as taskTitle,
         w.id as weekId
@@ -229,7 +230,7 @@ export function buildTaskRecordEntitiesByWeekId(weekId?: number) {
       JOIN tasks t ON t.id = tc.task_id
       JOIN week w ON w.id = tc.week_id
       WHERE w.id = ?
-      ORDER BY tc.task_id, tc.day_of_week
+      ORDER BY tc.task_id, tc.day_index
     `);
 
   const taskRecordEntities: TaskRecord[] = mapToTsType(
@@ -250,15 +251,16 @@ export function buildTaskRecordEntityByTaskId(taskId: number) {
       SELECT 
         tc.id as completionId,
         tc.task_id as taskId,
-        tc.day_of_week as dayOfWeek,
+        tc.day_index as dayIndex,
         tc.completed as completed,
         t.task_description as taskTitle,
+        t.active as taskActiveState,
         w.id as weekId
       FROM task_completion tc
       JOIN tasks t ON t.id = tc.task_id
       JOIN week w ON w.id = tc.week_id
       WHERE w.id = ? AND t.id = ?
-      ORDER BY tc.task_id, tc.day_of_week
+      ORDER BY tc.task_id, tc.day_index
     `);
 
   const taskRecordEntities: TaskRecord[] = mapToTsType(
@@ -277,10 +279,11 @@ function itemNotFound(result: Database.RunResult, id: number) {
 type TaskRow = {
   taskId: number;
   completionId: number;
-  dayOfWeek: number;
+  dayIndex: number;
   completed: number;
   taskTitle: string;
   weekId: number;
+  taskActiveState: 1|0;
 };
 
 function mapToTsType(rows: TaskRow[]): TaskRecord[] {
@@ -302,6 +305,7 @@ function mapToTsType(rows: TaskRow[]): TaskRecord[] {
           id: row.taskId,
           taskTitle: row.taskTitle,
           week: [],
+          activeState: row.taskActiveState
         });
       }
 
@@ -309,8 +313,9 @@ function mapToTsType(rows: TaskRow[]): TaskRecord[] {
 
       if (task) {
         task.week.push({
-          id: row.dayOfWeek,
-          day: dayName[row.dayOfWeek],
+          id: row.completionId,
+          dayIndex: row.dayIndex,
+          day: dayName[row.dayIndex],
           accomplished: row.completed === 1 ? true : false,
         });
       }

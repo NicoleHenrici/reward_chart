@@ -15,7 +15,7 @@ import {
 import { TaskRecord } from "@/types/commonTypes";
 
 export async function createTaskEntity(task: TaskRecord) {
-  const taskId = addTask(task.taskTitle);
+  const taskId =  await addTask(task.taskTitle);
   const week = await getCurrentWeek();
   const weekId = week ? week.lastInsertRowid : createWeek();
 
@@ -25,10 +25,12 @@ export async function createTaskEntity(task: TaskRecord) {
     createTaskCompletionItem(
       taskId as number,
       weekId as number,
-      day.id,
+      day.dayIndex,
       dayCompleted as number
     );
   }
+
+  return taskId as number;
 }
 
 export async function fetchTaskRecordsByWeekId(weekId?: number) {
@@ -47,6 +49,6 @@ export async function deactivateTaskById(taskId: number){
   deactivateTask(taskId);
 }
 
-export async function updateTaskCompletionItemById(itemId: number, completed: 1 | 0){
-  updateTaskCompletionItem(itemId, completed);
+export async function updateTaskCompletionItemById(itemId: number, completed: 1 | 0, dayOfWeek: number){
+  updateTaskCompletionItem(itemId, completed, dayOfWeek);
 }

@@ -5,7 +5,7 @@ import styles from "@/components/table/tableStructure.module.css";
 
 type TableStructureProps = {
     tasks: TaskRecord[];
-    updateTask: (task: TaskRecord, toDelete: boolean, day?: WeekDay) => void;
+    updateTask: (taskId: number, toDelete: boolean, day?: WeekDay) => void;
 };
 
 export default function TableStructure({ tasks, updateTask }: TableStructureProps) {
@@ -14,8 +14,8 @@ export default function TableStructure({ tasks, updateTask }: TableStructureProp
         <table className={`table ${styles.table}`}>
             <TableHead />
             <tbody>
-                {tasks && tasks.map((task) => (
-                    <TableRow key={task.id} task={task} updateTask={updateTask} />
+                {tasks && tasks.map((task, index) => (
+                    <TableRow key={index} task={task} updateTask={updateTask} />
                 ))}
             </tbody>
         </table>

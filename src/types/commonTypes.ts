@@ -1,11 +1,13 @@
 export type TaskRecord = {
-  id: number;
+  id?: number;
   taskTitle: string;
   week: WeekDay[];
+  activeState: 1 | 0;
 };
 
 export type WeekDay = {
-  id: number;
+  id?: number
+  dayIndex: number;
   day: string;
   accomplished: boolean;
 }

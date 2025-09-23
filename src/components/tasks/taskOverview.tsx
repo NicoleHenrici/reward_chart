@@ -8,12 +8,13 @@ import Modal from "../modal/modal";
 import NewTask from "./newTask";
 
 type TaskOverviewProps = {
-    createNewTask: (task: TaskRecord) => void;
+    createNewTask: (task: TaskRecord) => Promise<number>;
     getTaskRecordsByCurrentWeek: (weekId?: number | undefined) => Promise<TaskRecord[]>;
-    updateTaskItem: (itemId: number, state: 1|0) => void;
+    updateTaskItem: (taskId: number, state: 1|0, dayIndex: number) => void;
+    softDeleteTaskById: (taskId: number) => void;
 };
 
-export default function TaskOverview({ createNewTask, getTaskRecordsByCurrentWeek, updateTaskItem }: TaskOverviewProps) {
+export default function TaskOverview({ createNewTask, getTaskRecordsByCurrentWeek, updateTaskItem, softDeleteTaskById }: TaskOverviewProps) {
 
     const [isVisible, setIsVisible] = useState(false);
     const [tasks, setTasks] = useState<TaskRecord[]>([]);
@@ -25,43 +26,31 @@ export default function TaskOverview({ createNewTask, getTaskRecordsByCurrentWee
             setTasks(taskRecords);
         }
         fetchTasks();
-    }, []);
+    });
 
     function showModalHandler() {
         setIsVisible((prevVisible) => !prevVisible);
     }
 
-    function updateTask(task: TaskRecord, toDelete: boolean, day?: WeekDay) {
-        // if (toDelete) {
-        //     setTasks((prevTasks) => prevTasks.filter((el) => el.id !== task.id));
+    function updateTask(taskId: number, toDelete: boolean, day?: WeekDay) {
+        if (toDelete && taskId) {
+            softDeleteTaskById(taskId);
+        } else if(day) {
+            const completedState = !day.accomplished ? 1 : 0;
 
-        //     setScore((prevScore) => prevScore - task.week.filter(day => day.accomplished).length);
-        // } else {
-        //     setTasks((prevTasks) => prevTasks.map((el) => {
-        //         if (el.id === task.id && day) {
-        //             const updatedWeek = el.week.map((elDay) => {
-        //                 if (elDay.id === day.id) {
-        //                     return { ...elDay, accomplished: !elDay.accomplished };
-        //                 }
-        //                 return elDay;
-        //             });
-        //             const updatedSumAccomplished = updatedWeek.filter(weekDay => weekDay.accomplished).length;
-        //             return { ...el, week: updatedWeek, sumAccomplished: updatedSumAccomplished };
-        //         }
-        //         return el;
-        //     }));
+            console.log('update day')
+            console.log(day.dayIndex)
+            updateTaskItem(taskId, completedState, day.dayIndex);
+        }
 
-        //     setScore((prevScore) => {
-        //     if (day) {
-        //         return day.accomplished ? prevScore - 1 : prevScore + 1;
-        //     }
-        //     return prevScore;
-        // });
-        // }
+        console.log('update')
     }
 
-    function createTask(newTask: TaskRecord) {
-        createNewTask(newTask);
+    async function createTask(newTask: TaskRecord) {
+        const taskId = await createNewTask(newTask);
+
+        newTask.id = taskId as number;
+
         setTasks((prevTasks) => [...prevTasks, newTask]);
     }
 

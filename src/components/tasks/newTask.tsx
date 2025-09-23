@@ -17,17 +17,17 @@ export default function NewTask({ createNewTask, showModalHandler }: NewTaskProp
         const newTask = inputTextRef.current?.value;
 
         const task = {
-            id: Math.random(),
             taskTitle: newTask || "",
             week: [
-                { id: 0, day: 'monday', accomplished: false },
-                { id: 1, day: 'tuesday', accomplished: false },
-                { id: 2, day: 'wednesday', accomplished: false },
-                { id: 3, day: 'thursday', accomplished: false },
-                { id: 4, day: 'friday', accomplished: false },
-                { id: 5, day: 'saturday', accomplished: false },
-                { id: 6, day: 'sunday', accomplished: false },
-            ]
+                { dayIndex: 1, day: 'monday', accomplished: false },
+                { dayIndex: 2, day: 'tuesday', accomplished: false },
+                { dayIndex: 3, day: 'wednesday', accomplished: false },
+                { dayIndex: 4, day: 'thursday', accomplished: false },
+                { dayIndex: 5, day: 'friday', accomplished: false },
+                { dayIndex: 6, day: 'saturday', accomplished: false },
+                { dayIndex: 7, day: 'sunday', accomplished: false },
+            ],
+            activeState: 1 as 0 | 1
         }
 
         createNewTask(task);
