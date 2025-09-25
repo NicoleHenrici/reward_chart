@@ -1,21 +1,23 @@
-import { TaskRecord, WeekDay } from "@/types/commonTypes";
+import { CompletedItem, TaskRecord } from "@/types/commonTypes";
 import TableHead from "./tableHead";
 import TableRow from "./tableRow";
 import styles from "@/components/table/tableStructure.module.css";
 
 type TableStructureProps = {
     tasks: TaskRecord[];
-    updateTask: (taskId: number, toDelete: boolean, day?: WeekDay) => void;
+    datePerWeekDay: Date[];
+    completedItem: CompletedItem | undefined;
+    softDeleteTask: (taskId: number) => void;
+    toggleCompletedItem: (taskId: number, date: Date, toDelete: boolean) => void;
 };
 
-export default function TableStructure({ tasks, updateTask }: TableStructureProps) {
-
+export default function TableStructure({ tasks, completedItem, softDeleteTask, datePerWeekDay, toggleCompletedItem }: TableStructureProps) {
     return (
         <table className={`table ${styles.table}`}>
-            <TableHead />
+            <TableHead datePerWeekDay={datePerWeekDay}/>
             <tbody>
-                {tasks && tasks.map((task, index) => (
-                    <TableRow key={index} task={task} updateTask={updateTask} />
+                {tasks.length != 0 && tasks.map((task, index) => (
+                    <TableRow key={index} task={task} checkedDate={completedItem?.item[task.id!]} datePerWeekDay={datePerWeekDay} softDeleteTask={softDeleteTask} toggleCompletedItem={toggleCompletedItem}/>
                 ))}
             </tbody>
         </table>

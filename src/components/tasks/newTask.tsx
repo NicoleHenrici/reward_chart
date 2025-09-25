@@ -17,17 +17,8 @@ export default function NewTask({ createNewTask, showModalHandler }: NewTaskProp
         const newTask = inputTextRef.current?.value;
 
         const task = {
-            taskTitle: newTask || "",
-            week: [
-                { dayIndex: 1, day: 'monday', accomplished: false },
-                { dayIndex: 2, day: 'tuesday', accomplished: false },
-                { dayIndex: 3, day: 'wednesday', accomplished: false },
-                { dayIndex: 4, day: 'thursday', accomplished: false },
-                { dayIndex: 5, day: 'friday', accomplished: false },
-                { dayIndex: 6, day: 'saturday', accomplished: false },
-                { dayIndex: 7, day: 'sunday', accomplished: false },
-            ],
-            activeState: 1 as 0 | 1
+            title: newTask || "",
+            active: 1 as 0 | 1
         }
 
         createNewTask(task);

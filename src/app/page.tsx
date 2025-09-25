@@ -2,7 +2,15 @@
 import Image from "next/image";
 import styles from "./page.module.css";
 import TaskOverview from "@/components/tasks/taskOverview";
-import { createTaskEntity, fetchTaskRecordsByWeekId, updateTaskCompletionItemById, deactivateTaskById } from "@/server/actions";
+import {
+  addTask,
+  fetchActiveTasks,
+  deactivateTaskById,
+  fetchLatestTaskId,
+  addCompletedItem,
+  deleteCompletedItem,
+  fetchCompletedItemOfCurrentWeek
+} from "@/server/actions";
 
 
 export default function Home() {
@@ -11,10 +19,13 @@ export default function Home() {
     <div className={styles.page}>
       <main className={styles.main}>
         <TaskOverview
-          createNewTask={createTaskEntity}
-          getTaskRecordsByCurrentWeek={fetchTaskRecordsByWeekId}
-          updateTaskItem={updateTaskCompletionItemById}
-          softDeleteTaskById={deactivateTaskById} />
+          createNewTask={addTask}
+          getLatestTaskId={fetchLatestTaskId}
+          getTaskRecords={fetchActiveTasks}
+          softDeleteTaskById={deactivateTaskById}
+          createCompletedItem={addCompletedItem} 
+          deleteCompletedItem={deleteCompletedItem}
+          getCompletedItem={fetchCompletedItemOfCurrentWeek}/>
       </main>
       <footer className={styles.footer}>
         <a

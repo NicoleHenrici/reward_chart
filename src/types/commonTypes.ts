@@ -1,5 +1,9 @@
 export type TaskRecord = {
   id?: number;
-  taskTitle: string;
-  activeState: 1 | 0;
+  title: string;
+  active: 1 | 0;
 };
+
+export type CompletedItem = {
+    item: {[taskId: number]: Date[]};
+} 

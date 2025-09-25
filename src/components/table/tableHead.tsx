@@ -1,15 +1,20 @@
-export default function TableHead() {
+type TableHeadProps = {
+    datePerWeekDay: Date[];
+};
+
+export default function TableHead({ datePerWeekDay }: TableHeadProps) {
+    const dayName: string[] = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'];
+
     return (
         <thead>
             <tr>
                 <th scope="col">AUFGABE</th>
-                <th scope="col">MONTAG</th>
-                <th scope="col">DIENSTAG</th>
-                <th scope="col">MITTWOCH</th>
-                <th scope="col">DONNERSTAG</th>
-                <th scope="col">FREITAG</th>
-                <th scope="col">SASMSTAG</th>
-                <th scope="col">SONNTAG</th>
+                {datePerWeekDay.map((day, index) => (
+                    <th scope="col" key={index}>
+                        <p className="mb-0">{dayName[(index % dayName.length)]}</p>
+                        <p><small>{day.getDate()}.{day.getMonth() + 1}.{day.getFullYear()}</small></p>
+                    </th>
+                ))}
             </tr>
         </thead>
     );

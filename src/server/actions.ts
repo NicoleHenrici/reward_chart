@@ -1,54 +1,89 @@
 "use server";
 
 import {
-  addTask,
-  buildAllTaskRecordEntities,
-  buildTaskRecordEntitiesByWeekId,
-  buildTaskRecordEntityByTaskId,
+  createTask,
   createTaskCompletionItem,
-  createWeek,
   deactivateTask,
-  getCurrentWeek,
-  updateTaskCompletionItem,
-} from "@/lib/tasks";
+  deleteTaskCompletionItem,
+  getAllActiveTasks,
+  getIdOfLastTask,
+  getTaskCompletionItemsByInterval,
+} from "@/library/tasksLib";
 
-import { TaskRecord } from "@/types/commonTypes";
+import { CompletedItem, TaskRecord } from "@/types/commonTypes";
 
-export async function createTaskEntity(task: TaskRecord) {
-  const taskId =  await addTask(task.taskTitle);
-  const week = await getCurrentWeek();
-  const weekId = week ? week.lastInsertRowid : createWeek();
-
-  for (const day of task.week) {
-    const dayCompleted = day.accomplished ? 1 : 0;
-
-    createTaskCompletionItem(
-      taskId as number,
-      weekId as number,
-      day.dayIndex,
-      dayCompleted as number
-    );
-  }
-
-  return taskId as number;
+export async function addTask(task: TaskRecord) {
+  createTask(task.title);
 }
 
-export async function fetchTaskRecordsByWeekId(weekId?: number) {
-  return buildTaskRecordEntitiesByWeekId(weekId);
+type Id = {
+  taskId: number;
+};
+
+export async function fetchLatestTaskId() {
+  const id = (await getIdOfLastTask()) as Id;
+
+  return id.taskId;
 }
 
-export async function fetchAllTaskRecords() {
-  return buildAllTaskRecordEntities();
-}
-
-export async function fetchTaskRecordByTaskId(taskId: number) {
-  return buildTaskRecordEntityByTaskId(taskId);
-}
-
-export async function deactivateTaskById(taskId: number){
+export async function deactivateTaskById(taskId: number) {
   deactivateTask(taskId);
 }
 
-export async function updateTaskCompletionItemById(itemId: number, completed: 1 | 0, dayOfWeek: number){
-  updateTaskCompletionItem(itemId, completed, dayOfWeek);
+export async function fetchActiveTasks() {
+  const rows = (await getAllActiveTasks()) as TaskRecord[];
+
+  const activeRecords: TaskRecord[] = [];
+
+  for (const row of rows) {
+    const activeTask: TaskRecord = {
+      id: row.id,
+      title: row.title,
+      active: row.active,
+    };
+
+    activeRecords.push(activeTask);
+  }
+
+  return activeRecords as TaskRecord[];
+}
+
+export async function addCompletedItem(taskId: number, date: Date) {
+  createTaskCompletionItem(taskId, date);
+}
+
+export async function deleteCompletedItem(taskId: number, date: Date) {
+  deleteTaskCompletionItem(taskId, date);
+}
+
+export async function fetchCompletedItemOfCurrentWeek() {
+  const weekStart = new Date();
+  const weekEnd = new Date();
+  weekStart.setDate(weekStart.getDate() - (weekStart.getDay() - 1));
+  weekEnd.setDate(weekEnd.getDate() - (weekEnd.getDay() - 7));
+
+  const rows= (await getTaskCompletionItemsByInterval(
+    weekStart,
+    weekEnd
+  )) as { completed_at: number; task_id: number }[];
+
+  const completedItem: CompletedItem = mapRowsToCompletedItem(rows);
+
+  return completedItem;
+}
+
+function mapRowsToCompletedItem(rows: { completed_at: number; task_id: number }[]) {
+  const result: CompletedItem = { item: {} };
+
+  for (const row of rows) {
+    // SQLite julianday → JS Date
+    const date = new Date((row.completed_at - 2440587.5) * 86400000);
+
+    if (!result.item[row.task_id]) {
+      result.item[row.task_id] = [];
+    }
+    result.item[row.task_id].push(date);
+  }
+
+  return result;
 }
